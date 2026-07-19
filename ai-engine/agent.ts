@@ -21,7 +21,9 @@ export type FieldConfig =
   | { fn: "amexCard" | "accountToken" | "upperFullName" | "customerId" }
   | { fn: "faker"; method: string };
 
-export type ConfigMap = Record<string, FieldConfig | ConfigMap>;
+export interface ConfigMap {
+  [key: string]: FieldConfig | ConfigMap;
+}
 
 // ─── Agent ────────────────────────────────────────────────────────────────────
 

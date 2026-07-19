@@ -63,12 +63,4 @@ export type CustomToolName =
   | "upperFullName"
   | "customerId";
 
-export async function invokeCustomTool(name: CustomToolName): Promise<string> {
-  const toolMap: Record<CustomToolName, () => string> = {
-    amexCard: amexCardTool.invoke.bind(amexCardTool, {}),
-    accountToken: accountTokenTool.invoke.bind(accountTokenTool, {}),
-    upperFullName: upperFullNameTool.invoke.bind(upperFullNameTool, {}),
-    customerId: customerIdTool.invoke.bind(customerIdTool, {}),
-  };
-  return toolMap[name]();
-}
+

@@ -53,10 +53,12 @@ export function generate(
     const result: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(map)) {
-      if (typeof value === "object" && "fn" in value) {
+      if (value && typeof value === "object" && "fn" in value) {
         result[key] = executeField(value as FieldConfig);
-      } else {
+      } else if (value && typeof value === "object") {
         result[key] = generateOne(value as ConfigMap);
+      } else {
+        result[key] = value; // fallback
       }
     }
 
