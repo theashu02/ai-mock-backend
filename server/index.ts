@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { connectMongo, connectRedis, redis, Blueprint, MockRecord } from "./db";
 import { analyzeSchema } from "../ai-engine/agent";
 import { generate } from "../ai-engine/generator";
+import { generateSchemaFromAI } from "../ai-engine/schema-converter";
 
 connectMongo().catch(console.error);
 connectRedis().catch(console.error);
@@ -23,6 +24,29 @@ export const app = new Elysia({ prefix: "/api" })
     {
       body: t.Object({
         prompt: t.String(),
+      }),
+    }
+  )
+
+  // ─── POST /schema/convert ──────────────────────────────────────────────────
+  .post(
+    "/schema/convert",
+    async ({ body }) => {
+      const result = await generateSchemaFromAI(body.rawJson, body.format);
+      
+      if (!result.success) {
+        return new Response(JSON.stringify({ ok: false, message: result.error }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      
+      return { ok: true, schema: result.data };
+    },
+    {
+      body: t.Object({
+        rawJson: t.String(),
+        format: t.String(),
       }),
     }
   )
