@@ -123,9 +123,24 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-deep-purple text-electric-blue antialiased;
+    @apply bg-background text-foreground antialiased;
   }
   html {
     @apply font-sans;
+  }
+
+  /* Custom scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ring;
   }
 }

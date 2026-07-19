@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-const dmSans = DM_Sans({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-geist",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("h-full", "antialiased", dmSans.variable, "font-sans")}
+      className={cn("h-full", "antialiased", geist.variable, geist.className)}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         {children}
