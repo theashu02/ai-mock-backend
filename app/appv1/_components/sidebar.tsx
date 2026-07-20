@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, ChevronLeft, LayoutDashboard, Zap, ArrowLeftRight, ScanSearch, BookMarked, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export const NAV_ITEMS = [
   { href: "/appv1/simulate-apis", label: "Simulate APIs", icon: Zap },
@@ -18,14 +19,13 @@ export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
 
-  // Mock user for now since NextAuth isn't connected
   const UserData = {
     name: "Alex Mercer",
     email: "alex@obsidian.io",
     initial: "AM",
   };
 
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleSignOut = () => {
     startTransition(() => {
@@ -34,7 +34,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className={`flex h-screen flex-col border-r border-border bg-sidebar p-2 transition-[width] duration-500 ${isOpen ? "w-64" : "w-24"}`}>
+    <aside className={`flex h-screen flex-col border-r border-border bg-sidebar p-2 transition-[width] duration-500 ${isOpen ? "w-64" : "w-20"}`}>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-surface-container">
         <div className={`${isOpen ? "px-5 pt-5" : "flex flex-col items-center pt-5"} pb-2`}>
           <div className={`flex items-center gap-3 transition-all ${isOpen ? "justify-center" : "justify-center"}`}>
@@ -91,14 +91,15 @@ export function Sidebar() {
           </div>
         </div>
 
-        <div className="border-t border-border/50 px-4 py-3">
+        <div className="border-t border-border/50 px-4 py-3 space-y-2 flex flex-col items-center">
+          <ModeToggle isOpen={isOpen} />
           <Button 
             onClick={handleSignOut} 
             variant="ghost"
-            className={`h-10 w-full hover:bg-destructive/10 hover:text-destructive group ${isOpen ? "justify-between" : "justify-center"}`}
+            className={`h-10 w-full hover:bg-destructive/10 hover:text-destructive group ${isOpen ? "justify-between px-4" : "justify-center px-0"}`}
           >
             {isOpen && (
-              <span>{isPending ? "Signing out..." : "Securely Logout"}</span>
+              <span className="text-sm tracking-widest font-normal">{isPending ? "Signing out..." : "Logout"}</span>
             )}
             <ArrowUpRight className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "group-hover:-translate-y-0.5 group-hover:translate-x-0.5" : ""}`} />
           </Button>

@@ -1,5 +1,3 @@
-// ─── Tool Descriptions ────────────────────────────────────────────────────────
-
 export const TOOL_DESCRIPTIONS = {
   amexCard:
     "Generates a valid 15-digit American Express credit card number (starts with 34 or 37). Use for fields named cardNumber, creditCard, amexCard, card_number, etc.",
@@ -10,8 +8,6 @@ export const TOOL_DESCRIPTIONS = {
   customerId:
     "Generates a unique 12-digit numeric customer ID (e.g. 482910374821). Use for fields named customerId, customer_id, clientId, userId, memberId, etc.",
 } as const;
-
-// ─── Agent System Prompt ──────────────────────────────────────────────────────
 
 export const AGENT_SYSTEM_PROMPT = `You are a deterministic JSON schema analyzer for an enterprise banking mock-data engine.
 
@@ -39,8 +35,6 @@ Given an unstructured JSON payload (a schema template), your job is to output a 
 }
 \`\`\`
 `;
-
-// ─── Human Message Template ───────────────────────────────────────────────────
 
 export const buildAnalyzePrompt = (schema: unknown) =>
   `Analyze this JSON payload and return the config map:\n${JSON.stringify(schema, null, 2)}`;

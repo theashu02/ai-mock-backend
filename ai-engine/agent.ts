@@ -4,19 +4,6 @@ import { HumanMessage } from "@langchain/core/messages";
 import { customTools } from "./tools";
 import { AGENT_SYSTEM_PROMPT, buildAnalyzePrompt } from "./prompt";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-/**
- * A compiled config map produced by the agent.
- * Each leaf field maps to either a custom tool invocation or a standard Faker call.
- *
- * Example output:
- * {
- *   "cardNumber": { "fn": "amexCard" },
- *   "holderName": { "fn": "upperFullName" },
- *   "email":      { "fn": "faker", "method": "internet.email" }
- * }
- */
 export type FieldConfig =
   | { fn: "amexCard" | "accountToken" | "upperFullName" | "customerId" }
   | { fn: "faker"; method: string };
@@ -24,8 +11,6 @@ export type FieldConfig =
 export interface ConfigMap {
   [key: string]: FieldConfig | ConfigMap;
 }
-
-// ─── Agent ────────────────────────────────────────────────────────────────────
 
 const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0 });
 
@@ -35,11 +20,6 @@ const agent = createReactAgent({
   prompt: AGENT_SYSTEM_PROMPT,
 });
 
-/**
- * Analyze a JSON schema template and return a deterministic config map.
- * The config map is produced by gpt-4o once; the generator then executes it
- * without any further LLM calls.
- */
 export async function analyzeSchema(schema: unknown): Promise<ConfigMap> {
   const result = await agent.invoke({
     messages: [

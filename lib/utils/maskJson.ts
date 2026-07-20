@@ -4,7 +4,6 @@ export function maskSensitiveData(input: any): any {
   }
 
   if (Array.isArray(input)) {
-    // We truncate the array to a maximum of 3 items to save tokens while keeping schema variations.
     return input.slice(0, 3).map(item => maskSensitiveData(item));
   }
 
@@ -18,7 +17,6 @@ export function maskSensitiveData(input: any): any {
     return maskedObj;
   }
 
-  // Primitive replacements
   if (typeof input === "string") {
     return "string";
   }
