@@ -34,7 +34,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className={`flex h-screen flex-col border-r border-border rounded-md bg-sidebar p-1 transition-[width] duration-500 ${isOpen ? "w-64" : "w-24"}`}>
+    <aside className={`flex h-screen flex-col border-r border-border rounded-md bg-sidebar p-1 transition-[width] duration-500 ${isOpen ? "w-60" : "w-24"}`}>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden border border-border bg-surface-container rounded-md">
         <div className={`${isOpen ? "px-5 pt-5" : "flex flex-col items-center pt-5"} pb-2`}>
           <div className={`flex items-center gap-3 transition-all ${isOpen ? "justify-center" : "justify-center"}`}>
