@@ -28,7 +28,7 @@ export function SchemaOutput({ generatedSchema, format }: SchemaOutputProps) {
           size="sm"
           onClick={handleCopy}
           disabled={!generatedSchema}
-          className="h-9 px-3 gap-2 border-border/50 bg-card/50"
+          className="h-9 px-3 gap-2 border-border/50"
         >
           {copied ? (
             <Check className="w-4 h-4 text-emerald-500" />
@@ -39,12 +39,12 @@ export function SchemaOutput({ generatedSchema, format }: SchemaOutputProps) {
         </Button>
       </div>
 
-      <div className="flex-1 relative rounded-xl border border-border/50 bg-[#1e1e1e] overflow-hidden min-h-0">
+      <div className="flex-1 relative border border-border/50 bg-muted/30 overflow-hidden min-h-0">
         {generatedSchema ? (
           <textarea
             readOnly
             value={generatedSchema}
-            className="w-full h-full p-4 font-mono text-sm text-zinc-300 bg-transparent resize-none outline-none focus:outline-none"
+            className="w-full h-full p-4 font-mono text-sm text-foreground bg-transparent resize-none"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground/50 p-6 text-center">

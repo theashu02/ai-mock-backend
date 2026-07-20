@@ -59,7 +59,7 @@ export default function SchemaConverterPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3rem)] md:h-[calc(100vh-4rem)] overflow-hidden bg-background rounded-xl border border-border/50 shadow-sm">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-background">
       {/* Header */}
       <div className="flex flex-col gap-2 border-b border-border/50 px-6 py-4 bg-card/30 shrink-0">
         <div className="flex items-center justify-between">

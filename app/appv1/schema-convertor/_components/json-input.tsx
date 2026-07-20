@@ -50,7 +50,7 @@ export function JsonInput({
         value={jsonInput}
         onChange={(e) => setJsonInput(e.target.value)}
         placeholder="Paste your JSON response here..."
-        className="flex-1 font-mono text-sm resize-none p-4 rounded-xl border-border/50 bg-card/30 focus-visible:ring-primary/20 min-h-0"
+        className="flex-1 font-mono text-sm resize-none p-4 border-border/50 bg-card/30 focus-visible:ring-primary/20 min-h-0"
       />
 
       <div className="flex justify-end pt-2">
