@@ -1,4 +1,4 @@
-export function maskSensitiveData(input: any): any {
+export function maskSensitiveData(input: unknown): unknown {
   if (input === null || input === undefined) {
     return input;
   }
@@ -8,10 +8,11 @@ export function maskSensitiveData(input: any): any {
   }
 
   if (typeof input === "object") {
-    const maskedObj: Record<string, any> = {};
-    for (const key in input) {
-      if (Object.prototype.hasOwnProperty.call(input, key)) {
-        maskedObj[key] = maskSensitiveData(input[key]);
+    const maskedObj: Record<string, unknown> = {};
+    const record = input as Record<string, unknown>;
+    for (const key in record) {
+      if (Object.prototype.hasOwnProperty.call(record, key)) {
+        maskedObj[key] = maskSensitiveData(record[key]);
       }
     }
     return maskedObj;

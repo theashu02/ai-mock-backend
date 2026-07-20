@@ -4,8 +4,9 @@ import { analyzeSchema } from "../ai-engine/agent";
 import { generate } from "../ai-engine/generator";
 import { generateSchemaFromAI } from "../ai-engine/schema-converter";
 
-connectMongo().catch(console.error);
-connectRedis().catch(console.error);
+async function ensurePersistence() {
+  await Promise.all([connectMongo(), connectRedis()]);
+}
 
 export const app = new Elysia({ prefix: "/api" })
   .get("/", () => "Welcome to AI Mock Backend API")
@@ -36,12 +37,12 @@ export const app = new Elysia({ prefix: "/api" })
       
       if (!result.success) {
         return new Response(JSON.stringify({ ok: false, message: result.error }), {
-          status: 500,
+          status: result.statusCode,
           headers: { "Content-Type": "application/json" },
         });
       }
       
-      return { ok: true, schema: result.data };
+      return { ok: true, schema: result.data, meta: result.meta };
     },
     {
       body: t.Object({
@@ -53,6 +54,8 @@ export const app = new Elysia({ prefix: "/api" })
 
   // ─── POST /schema/:name ────────────────────────────────────────────────────
   .post("/schema/:name", async ({ params, body }) => {
+    await ensurePersistence();
+
     // 1. Compile the arbitrary JSON schema into a generator map via LangGraph agent
     const configMap = await analyzeSchema(body);
 
@@ -72,8 +75,10 @@ export const app = new Elysia({ prefix: "/api" })
 
   // ─── POST /generate/:name ──────────────────────────────────────────────────
   .post("/generate/:name", async ({ params }) => {
+    await ensurePersistence();
+
     const key = `schema:${params.name}`;
-    let configMapStr = await redis.get(key);
+    const configMapStr = await redis.get(key);
     let configMap;
 
     // 1. Fetch compiled map from Redis (fallback to Mongo)

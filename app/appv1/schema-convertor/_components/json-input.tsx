@@ -1,5 +1,6 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,10 @@ interface JsonInputProps {
   setFormat: (value: string) => void;
   isGenerating: boolean;
   onGenerate: () => void;
+  inputStats: {
+    bytes: number;
+    lines: number;
+  };
 }
 
 export function JsonInput({
@@ -25,14 +30,31 @@ export function JsonInput({
   setFormat,
   isGenerating,
   onGenerate,
+  inputStats,
 }: JsonInputProps) {
+  const isLargePayload = inputStats.lines >= 1000 || inputStats.bytes >= 200_000;
+
   return (
     <div className="flex flex-col w-full h-full p-4 gap-4 bg-background">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Input JSON</h2>
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold">Input JSON</h2>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <Badge variant={isLargePayload ? "default" : "outline"}>
+              {inputStats.lines.toLocaleString()} lines
+            </Badge>
+            <Badge variant="outline">{formatBytes(inputStats.bytes)}</Badge>
+            {isLargePayload ? <Badge variant="secondary">Large mode</Badge> : null}
+          </div>
+        </div>
         <div className="flex items-center gap-3">
-          <Select value={format} onValueChange={setFormat}>
-            <SelectTrigger className="w-[140px] lg:w-[160px] h-9">
+          <Select
+            value={format}
+            onValueChange={(value) => {
+              if (value) setFormat(value);
+            }}
+          >
+            <SelectTrigger className="w-35 lg:w-40 h-9">
               <SelectValue placeholder="Select format" />
             </SelectTrigger>
             <SelectContent>
@@ -74,4 +96,10 @@ export function JsonInput({
       </div>
     </div>
   );
+}
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }

@@ -1,18 +1,22 @@
 import mongoose, { Schema } from "mongoose";
 import { createClient } from "redis";
 
-// ─── Mongoose ────────────────────────────────────────────────────────────────
+let mongoConnection: Promise<typeof mongoose> | null = null;
 
 export async function connectMongo() {
   if (mongoose.connection.readyState >= 1) return;
-  await mongoose.connect("mongodb://localhost:27017/mock_engine");
+
+  mongoConnection ??= mongoose.connect(
+    process.env.MONGO_URL ?? "mongodb://localhost:27017/mock_engine",
+  );
+  await mongoConnection;
   console.log("----- MongoDB connected successfully -----");
 }
 
 const BlueprintSchema = new Schema({
   name: { type: String, required: true },
   template: { type: Schema.Types.Mixed, required: true },
-  configMap: { type: Schema.Types.Mixed, required: true }, // Store the compiled map
+  configMap: { type: Schema.Types.Mixed, required: true },
 });
 
 const MockRecordSchema = new Schema({
@@ -26,18 +30,22 @@ export const Blueprint =
 export const MockRecord =
   mongoose.models.MockRecord ?? mongoose.model("MockRecord", MockRecordSchema);
 
-// ─── Redis ───────────────────────────────────────────────────────────────────
+export const redis = createClient({
+  url: process.env.REDIS_URL ?? "redis://localhost:6379",
+});
 
-export const redis = createClient({ url: "redis://localhost:6379" });
+let redisConnection: Promise<unknown> | null = null;
+let isRedisErrorListenerRegistered = false;
 
-let isRedisConnected = false;
 export async function connectRedis() {
-  if (isRedisConnected) return;
-  
-  // Catch initial connection errors so app doesn't crash on boot if redis is missing
-  redis.on('error', (err) => console.log('Redis Client Error', err));
-  
-  await redis.connect();
-  isRedisConnected = true;
+  if (redis.isOpen) return;
+
+  if (!isRedisErrorListenerRegistered) {
+    redis.on("error", (err) => console.error("Redis Client Error", err));
+    isRedisErrorListenerRegistered = true;
+  }
+
+  redisConnection ??= redis.connect();
+  await redisConnection;
   console.log("----- Redis connected successfully -----");
 }

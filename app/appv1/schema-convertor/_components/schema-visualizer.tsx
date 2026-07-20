@@ -7,8 +7,15 @@ interface SchemaVisualizerProps {
 }
 
 type DataType = "object" | "array" | "string" | "number" | "boolean" | "null" | "unknown";
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
 
-function getType(value: any): DataType {
+function getType(value: JsonValue): DataType {
   if (value === null) return "null";
   if (Array.isArray(value)) return "array";
   if (typeof value === "object") return "object";
@@ -18,19 +25,23 @@ function getType(value: any): DataType {
   return "unknown";
 }
 
+function isJsonObject(value: JsonValue): value is { [key: string]: JsonValue } {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function TypeIcon({ type, className }: { type: DataType; className?: string }) {
   const props = { className: cn("w-3.5 h-3.5", className) };
   switch (type) {
-    case "object": return <Braces {...props} className={cn(props.className, "text-blue-400")} />;
-    case "array": return <Brackets {...props} className={cn(props.className, "text-amber-400")} />;
-    case "string": return <Type {...props} className={cn(props.className, "text-emerald-400")} />;
-    case "number": return <Hash {...props} className={cn(props.className, "text-purple-400")} />;
-    case "boolean": return <ToggleLeft {...props} className={cn(props.className, "text-rose-400")} />;
-    default: return <CircleDashed {...props} className={cn(props.className, "text-zinc-400")} />;
+    case "object": return <Braces {...props} className={cn(props.className, "text-chart-1")} />;
+    case "array": return <Brackets {...props} className={cn(props.className, "text-chart-2")} />;
+    case "string": return <Type {...props} className={cn(props.className, "text-chart-3")} />;
+    case "number": return <Hash {...props} className={cn(props.className, "text-chart-4")} />;
+    case "boolean": return <ToggleLeft {...props} className={cn(props.className, "text-chart-5")} />;
+    default: return <CircleDashed {...props} className={cn(props.className, "text-muted-foreground")} />;
   }
 }
 
-function TreeNode({ label, value, isLast }: { label: string; value: any; isLast?: boolean }) {
+function TreeNode({ label, value }: { label: string; value: JsonValue }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const type = getType(value);
   const isComplex = type === "object" || type === "array";
@@ -41,15 +52,15 @@ function TreeNode({ label, value, isLast }: { label: string; value: any; isLast?
   // For arrays, showing just the structure of the first item is usually best for schema analysis.
   
   const renderChildren = () => {
-    if (type === "object") {
+    if (isJsonObject(value)) {
       const keys = Object.keys(value);
-      return keys.map((key, index) => (
-        <TreeNode key={key} label={key} value={value[key]} isLast={index === keys.length - 1} />
+      return keys.map((key) => (
+        <TreeNode key={key} label={key} value={value[key]} />
       ));
     }
-    if (type === "array" && value.length > 0) {
+    if (Array.isArray(value) && value.length > 0) {
       // Just show the schema of the first item to represent the array structure
-      return <TreeNode label="[0]" value={value[0]} isLast={true} />;
+      return <TreeNode label="[0]" value={value[0]} />;
     }
     return null;
   };
@@ -60,33 +71,33 @@ function TreeNode({ label, value, isLast }: { label: string; value: any; isLast?
         {isComplex ? (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-0.5 hover:bg-white/10 rounded text-muted-foreground flex-shrink-0"
+            className="p-0.5 hover:bg-white/10 rounded text-muted-foreground shrink-0"
           >
             {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
           </button>
         ) : (
-          <div className="w-4.5 flex-shrink-0" /> // Spacer for alignment
+          <div className="w-4.5 shrink-0" /> // Spacer for alignment
         )}
         
         <TypeIcon type={type} />
         
-        <span className="text-zinc-300 font-medium">{label}</span>
+        <span className="text-foreground font-medium">{label}</span>
         <span className="text-muted-foreground text-xs ml-1">
-          {type === "array" ? `Array[${value.length}]` : type}
+          {Array.isArray(value) ? `Array[${value.length}]` : type}
         </span>
       </div>
 
       {isComplex && isExpanded && (
         <div className="flex">
-          <div className="w-4.5 flex-shrink-0 flex justify-center">
+          <div className="w-4.5 shrink-0 flex justify-center">
             <div className="w-px h-full bg-border/50 group-hover:bg-border transition-colors" />
           </div>
           <div className="flex-1 pl-1 py-1">
             {renderChildren()}
-            {type === "array" && value.length === 0 && (
+            {Array.isArray(value) && value.length === 0 && (
               <span className="text-muted-foreground text-xs italic">empty</span>
             )}
-            {type === "object" && Object.keys(value).length === 0 && (
+            {isJsonObject(value) && Object.keys(value).length === 0 && (
               <span className="text-muted-foreground text-xs italic">empty</span>
             )}
           </div>
