@@ -3,6 +3,12 @@ import { connectMongo, connectRedis, redis, Blueprint, MockRecord } from "./db";
 import { analyzeSchema } from "../ai-engine/agent";
 import { generate } from "../ai-engine/generator";
 import { generateSchemaFromAI } from "../ai-engine/schema-converter";
+import {
+  createMockApi,
+  deleteMockApi,
+  listMockApis,
+  previewMockApi,
+} from "./mock-api-service";
 
 async function ensurePersistence() {
   await Promise.all([connectMongo(), connectRedis()]);
@@ -11,6 +17,53 @@ async function ensurePersistence() {
 export const app = new Elysia({ prefix: "/api" })
   .get("/", () => "Welcome to AI Mock Backend API")
   .get("/health", () => ({ status: "ok", timestamp: new Date().toISOString() }))
+
+  .get("/mock-apis", async ({ request }) => {
+    const origin = new URL(request.url).origin;
+    return { ok: true, apis: await listMockApis(origin) };
+  })
+
+  .post(
+    "/mock-apis",
+    async ({ body }) => {
+      const api = await createMockApi(body);
+      return { ok: true, api };
+    },
+    {
+      body: t.Object({
+        name: t.String(),
+        path: t.String(),
+        methods: t.Array(t.String()),
+        rawJson: t.String(),
+        statusCode: t.Optional(t.Number()),
+        latencyMs: t.Optional(t.Number()),
+      }),
+    },
+  )
+
+  .post("/mock-apis/:id/preview", async ({ params }) => {
+    const preview = await previewMockApi(params.id);
+    if (!preview) {
+      return new Response(JSON.stringify({ ok: false, message: "Mock API not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return { ok: true, preview };
+  })
+
+  .delete("/mock-apis/:id", async ({ params }) => {
+    const deleted = await deleteMockApi(params.id);
+    if (!deleted) {
+      return new Response(JSON.stringify({ ok: false, message: "Mock API not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return { ok: true };
+  })
   
   // Test endpoint for the UI button
   .post(

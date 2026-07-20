@@ -31,7 +31,7 @@ export function MaskedPayloadPreview({ jsonInput }: MaskedPayloadPreviewProps) {
         <SheetHeader>
           <SheetTitle>Masked JSON Payload</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 mt-4 relative border border-border/50 bg-muted/30 overflow-auto min-h-0">
+        <div className="flex-1 mt-4 relative border border-border/50 bg-muted/30 overflow-auto min-h-0 rounded-md">
           <pre className="p-4 font-mono text-xs sm:text-[13px] leading-relaxed text-foreground">
             {getMaskedJsonPreview()}
           </pre>

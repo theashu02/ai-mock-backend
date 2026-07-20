@@ -89,7 +89,7 @@ export default function SchemaConverterPage() {
           <h1 className="text-xl font-bold tracking-tight">
             Schema Converter
           </h1>
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium border border-primary/20 rounded-md">
             Privacy Preserving
           </div>
           <MaskedPayloadPreview jsonInput={jsonInput} />

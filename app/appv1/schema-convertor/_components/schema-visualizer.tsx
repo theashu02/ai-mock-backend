@@ -67,11 +67,11 @@ function TreeNode({ label, value }: { label: string; value: JsonValue }) {
 
   return (
     <div className="flex flex-col text-sm font-mono">
-      <div className="flex items-center gap-1.5 py-1 hover:bg-white/5 rounded px-1 -ml-1 transition-colors group">
+      <div className="flex items-center gap-1.5 py-1 hover:bg-white/5 rounded-md px-1 -ml-1 transition-colors group">
         {isComplex ? (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-0.5 hover:bg-white/10 rounded text-muted-foreground shrink-0"
+            className="p-0.5 hover:bg-white/10 rounded-md text-muted-foreground shrink-0"
           >
             {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
           </button>

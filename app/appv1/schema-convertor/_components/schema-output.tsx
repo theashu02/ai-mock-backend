@@ -63,7 +63,7 @@ export function SchemaOutput({ generatedSchema, format, meta }: SchemaOutputProp
         </Button>
       </div>
 
-      <div className="flex-1 relative border border-border/50 bg-muted/30 overflow-hidden min-h-0">
+      <div className="flex-1 relative border border-border/50 bg-muted/30 overflow-hidden min-h-0 rounded-md">
         {generatedSchema ? (
           <textarea
             readOnly

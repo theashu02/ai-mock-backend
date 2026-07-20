@@ -24,11 +24,30 @@ const MockRecordSchema = new Schema({
   payload: { type: Schema.Types.Mixed, required: true },
 });
 
+const MockApiSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true, index: true },
+    methods: { type: [String], required: true, default: ["GET"] },
+    statusCode: { type: Number, required: true, default: 200 },
+    latencyMs: { type: Number, required: true, default: 0 },
+    enabled: { type: Boolean, required: true, default: true },
+    sampleResponse: { type: Schema.Types.Mixed, required: true },
+    config: { type: Schema.Types.Mixed, required: true },
+    hitCount: { type: Number, required: true, default: 0 },
+    lastHitAt: { type: Date },
+  },
+  { timestamps: true },
+);
+
 export const Blueprint =
   mongoose.models.Blueprint ?? mongoose.model("Blueprint", BlueprintSchema);
 
 export const MockRecord =
   mongoose.models.MockRecord ?? mongoose.model("MockRecord", MockRecordSchema);
+
+export const MockApi =
+  mongoose.models.MockApi ?? mongoose.model("MockApi", MockApiSchema);
 
 export const redis = createClient({
   url: process.env.REDIS_URL ?? "redis://localhost:6379",
@@ -45,7 +64,10 @@ export async function connectRedis() {
     isRedisErrorListenerRegistered = true;
   }
 
-  redisConnection ??= redis.connect();
+  redisConnection ??= redis.connect().catch((error) => {
+    redisConnection = null;
+    throw error;
+  });
   await redisConnection;
   console.log("----- Redis connected successfully -----");
 }
